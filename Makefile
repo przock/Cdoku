@@ -1,9 +1,9 @@
 # Compiler and flags
-CC = gcc
-CFLAGS = -Wall -Wextra -O2  # Enable detailed warnings and optimizations
+CC = clang
+CFLAGS = -Wall -Wextra -O0 -g  # Enable detailed warnings and optimizations
 
 # Target executable
-TARGET = cdoku
+TARGET = Cdoku
 
 # Source files
 SRCS = main.c board.c solver.c
