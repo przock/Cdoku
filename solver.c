@@ -4,66 +4,126 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
-bool solve_board(board *b, bool** hint) {
+bool solve_board(board *b, int **hint) {
   int i = 0;
+  bool backtrack = false;
   while (i < 81) {
+    usleep(100000);
     int x = i % 9; // column
     int y = i / 9; // row
     
-  int min_guess = 1;
-  bool backtrack = false;
-  int current = get_cell_value(b, x, y);
-  printf("(%d, %d): %d\n", x, y, current);
+    int current = get_cell_value(b, x, y);
 
-  if (hint[x][y] == true) {
-    if (backtrack) {
-      i--;
-      i--;
+    if (backtrack && !hint[x][y]) {
+      set_cell_value(b, x, y, 0);
+    }
+
+    int min_guess = backtrack ? current + 1 : 1;
+    int valid_choice = check_cell(b, x, y, min_guess);
+    int guess = hint[x][y] ? CELL_FILLED : valid_choice;
+
+    /* printf("guess for (%d, %d): %d\n", x, y, guess); */
+
+    if (guess == CELL_FILLED) { // 10
+
+      if (backtrack) {
+	if (x == 0 && y == 0) {printf("No valid solution!\n"); exit(EXIT_FAILURE);}
+        i--;
+        continue;
+      }
+
       print_board_subgrid(b);
+      printf("\033[13A");
+      i++;
       continue;
     }
-  }
-  
-  usleep(500000);
-  if (backtrack) {
-    min_guess = get_cell_value(b, x, y) + 1;
-    set_cell_value(b, x, y, 0);
-  }
-  if (!backtrack)
-	min_guess = 1;
-  
-  int guess = check_cell(b, i, j, min_guess);
-  backtrack = false;
-  /* printf("guess for (%d, %d): %d\n", i, j, guess); */
-      /* printf("min: %d\n", min_guess); */
-  
-  if (guess != 10) {
-    if (guess != 11) {
-      
-      set_cell_value(b, i, j, guess);
-      /* printf("set (%d, %d) to %d\n", i, j , guess); */
-      print_board_subgrid(b);
-      /* printf("\033[13A"); */
-    } else if (guess == 11) {
-      if (i == 0) {
-	j--;
-	j--;
-	i = 7;
-	/* min_guess++; */
-	backtrack = true;
-      } else {
-	i--;
-	i--;
-	/* min_guess++; */
-	backtrack = true;
-      }
+
+    if (guess != CELL_INVALID) { // 11
+      set_cell_value(b, x, y, guess);
+      backtrack = false;
+
+    } else {
+      /* printf("discrepancy at (%d, %d)\n", x, y); */
+
+      backtrack = true;
+      i--;
     }
+
+
+    print_board_subgrid(b);
+    printf("\033[13A");
+    /* printf("(%d, %d): %d\n", x, y, current); */
+    
+    if (!backtrack) {i++;}
   }
-  /* printf("\033[14A"); */
-  /* print_board_subgrid(b); */
+
+  printf("\033[14A");
+  print_board_subgrid(b);
   return true;
 }
+
+/* bool solve_board(board *b, bool** hint) { */
+/*   int i = 0; */
+/*   while (i < 81) { */
+/*     int x = i % 9; // column */
+/*     int y = i / 9; // row */
+    
+/*     bool backtrack = false; */
+/*     int min_guess = 1; */
+/*     int current = get_cell_value(b, x, y); */
+/*     printf("(%d, %d): %d\n", x, y, current); */
+    
+/*     if (hint[x][y] == true) { */
+/*       if (backtrack) { */
+/* 	i--; */
+/* 	i--; */
+/* 	print_board_subgrid(b); */
+/* 	continue; */
+/*       } */
+/*     } */
+    
+/*     usleep(500000); */
+/*     if (backtrack) { */
+/*       min_guess = get_cell_value(b, x, y) + 1; */
+/*       set_cell_value(b, x, y, 0); */
+/*     } */
+/*     if (!backtrack) */
+/*       min_guess = 1; */
+    
+/*     int guess = check_cell(b, i, j, min_guess); */
+/*     backtrack = false; */
+/*     /\* printf("guess for (%d, %d): %d\n", i, j, guess); *\/ */
+/*     /\* printf("min: %d\n", min_guess); *\/ */
+    
+/*     if (guess != 10) { */
+/*       if (guess != 11) { */
+	
+/* 	set_cell_value(b, i, j, guess); */
+/* 	/\* printf("set (%d, %d) to %d\n", i, j , guess); *\/ */
+/* 	print_board_subgrid(b); */
+/* 	/\* printf("\033[13A"); *\/ */
+/*       } else if (guess == 11) { */
+/* 	if (i == 0) { */
+/* 	  j--; */
+/* 	  j--; */
+/* 	  i = 7; */
+/* 	  /\* min_guess++; *\/ */
+/* 	  backtrack = true; */
+/* 	} else { */
+/* 	  i--; */
+/* 	  i--; */
+/* 	  /\* min_guess++; *\/ */
+/* 	  backtrack = true; */
+/* 	} */
+/*       } */
+/*     } */
+/*     /\* printf("\033[14A"); *\/ */
+/*     /\* print_board_subgrid(b); *\/ */
+/*     return true; */
+/*   } */
+/* } */
 
 int solve_cell(board *b, int x, int y, int min_guess) {
   PairList grid_bounds = get_cell_grid(x, y);

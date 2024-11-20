@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = clang
-CFLAGS = -Wall -Wextra -O0 -g  # Enable detailed warnings and optimizations
+CFLAGS = -v -Wall -Wextra -O0 -g  # Enable detailed warnings and optimizations
 
 # Target executable
 TARGET = Cdoku

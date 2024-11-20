@@ -3,32 +3,46 @@
 #include <stdbool.h>
 
 void print_board(board *b) { // print the contents of the board
-  for (int i = 0; i < 9; i++) { // rows
-    for (int j = 0; j < 9; j++) { // columns
-      printf("(%d)", (*b)[i][j]);
-    }
-    printf("\n");
+  int i = 0;
+  while (i < 81) {
+    int x = i % 9; // column
+    int y = i / 9; // row
+
+    int current = get_cell_value(b, x, y);
+    printf(" %d ", current);
+    if (x == 8) {
+      printf("\n");
+    }      
+
+    i++;
   }
 }
 
 void print_board_subgrid(board *b) { // print the contents of the board with subgrid separators
-  for (int i = 0; i < 9; i++) { // rows
+  int i = 0;
+  bool newline = true;
+  while (i < 81) {
+    int x = i % 9; // column
+    int y = i / 9; // row
+    int current = get_cell_value(b, x, y);
 
-    if (i % 3 == 0)
+    if (y % 3 == 0 && newline == true) {
       printf("-------------------------------\n");
-
-    for (int j = 0; j < 9; j++) { // columns
-
-      if (j == 0)
-	printf("|");
-
-      printf(" %d ", (*b)[i][j]);
-
-      if ((j + 1) % 3 == 0)
-	printf("|");
-
+      newline = false;
     }
-    printf("\n");
+
+    if (x % 3 == 0) {
+      printf("|");
+    }      
+
+    printf(" %d ", current);
+
+    if (x == 8) {
+      printf("|\n");
+      newline = true;
+    }      
+
+    i++;
   }
   printf("-------------------------------\n");
 }
@@ -41,8 +55,8 @@ int get_cell_value(board *b, int y, int x) {
   return (*b)[x][y];
 }
 
-bool get_cell_value_filled(board *b, int y, int x) {
-  return (*b)[x][y] ? true : false;
+int get_cell_value_filled(board *b, int y, int x) {
+  return (*b)[x][y] ? 1 : 0;
 }
 
 PairList get_cell_grid(int y, int x) {
@@ -87,23 +101,27 @@ int* get_grid_values(board *b, int x, int y) {
   return values;
 }
 
-bool** get_hint_grid(board *b) { // get a 2d array of the pre-filled squares so we know which ones to skip when backtracking
-    bool** arr = (bool**)malloc(9 * sizeof(int*));
+int** get_hint_board(board *b) { // get a 2d array of the pre-filled squares so we know which ones to skip when backtracking
+    int** arr = (int**)malloc(9 * sizeof(int*));
     if (!arr) {
-      printf("Memory error from get_hint_grid!");
+      printf("Memory error from get_hint_board!");
       exit(1);
     }      
 
     for (int i = 0; i < 9; i++) {
-        arr[i] = (bool*)malloc(9 * sizeof(int));
+        arr[i] = (int*)malloc(9 * sizeof(int));
     }
 
     // iterate though the entire board and build a bool[][] of whether or not cells are filled
-    for (int i = 0; i < 9; i++) { // rows
-      for (int j = 0; j < 9; j++) { // columns
-	arr[i][j] = get_cell_value_filled(b, i, j);
-      }
-    }
 
+    int i = 0;
+    while (i < 81) {
+      int x = i % 9; // column
+      int y = i / 9; // row
+      
+      arr[x][y] = get_cell_value_filled(b, x, y);
+      i++;
+    }
+    
     return arr;
 }
