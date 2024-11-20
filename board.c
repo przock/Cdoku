@@ -1,6 +1,7 @@
 #include "board.h"
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 void print_board(board *b) { // print the contents of the board
   int i = 0;
@@ -22,6 +23,36 @@ void print_board_subgrid(board *b) { // print the contents of the board with sub
   int i = 0;
   bool newline = true;
   while (i < 81) {
+    int x = i % 9; // column
+    int y = i / 9; // row
+    int current = get_cell_value(b, x, y);
+
+    if (y % 3 == 0 && newline == true) {
+      printf("-------------------------------\n");
+      newline = false;
+    }
+
+    if (x % 3 == 0) {
+      printf("|");
+    }      
+
+    printf(" %d ", current);
+
+    if (x == 8) {
+      printf("|\n");
+      newline = true;
+    }      
+
+    i++;
+  }
+  printf("-------------------------------\n");
+}
+
+void print_board_cool(board *b, int delay) { // print the contents of the board slowly
+  int i = 0;
+  bool newline = true;
+  while (i < 81) {
+    usleep(delay);
     int x = i % 9; // column
     int y = i / 9; // row
     int current = get_cell_value(b, x, y);

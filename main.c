@@ -1,28 +1,46 @@
 #include <stdio.h>
 #include "board.h"
 #include "solver.h"
+#include <stdlib.h>
+#include <signal.h>
 
 board game = {
-    {2, 3, 0, 9, 4, 0, 0, 5, 0},
-    {8, 0, 0, 5, 3, 2, 1, 0, 9},
-    {9, 5, 0, 1, 0, 0, 7, 0, 3},
-    {0, 8, 7, 0, 0, 0, 6, 3, 0},
-    {4, 0, 3, 0, 7, 1, 0, 8, 0},
-    {0, 0, 2, 0, 5, 3, 0, 0, 0},
-    {3, 6, 8, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 4, 1, 9, 0, 0, 0},
-    {0, 0, 9, 0, 0, 8, 0, 7, 2}
+    {6, 3, 0, 0, 0, 0, 0, 8, 1},
+    {0, 2, 0, 0, 0, 3, 0, 0, 0},
+    {0, 0, 0, 0, 1, 7, 4, 3, 0},
+    {0, 9, 0, 4, 0, 0, 5, 7, 0},
+    {0, 0, 0, 7, 6, 2, 0, 0, 0},
+    {0, 8, 0, 0, 0, 0, 6, 0, 0},
+    {0, 6, 0, 0, 2, 0, 0, 0, 0},
+    {3, 0, 9, 0, 0, 0, 0, 6, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 9}
 };
 
 board* g = &game;
 int** hint_board;
+bool solved;
+
+void handle_signal(int signal) {
+  if (signal == SIGINT) {
+    print_board_subgrid(g);
+    printf("\nInterrupt! Exiting...\n");
+    printf("\033[?25h");
+    exit(0);
+  }
+}
 
 int main() {
-  hint_board = get_hint_board(g);
 
-  printf("Starting puzzle...\n\n\033[?25l");
+  signal(SIGINT, handle_signal);
+
+  hint_board = get_hint_board(g);
+  printf("Starting puzzle...\n\033[?25l");
   print_board_subgrid(g);
-  printf("\n");
-  solve_board(g, hint_board);
+  printf("\n");  
+  solved = solve_board(g, hint_board, 15000);
+  /* solved = solve_board_quick(g, hint_board); */
+  /* print_board_subgrid(g); */
+  if (!solved) {printf("No solution!\n"); exit(EXIT_FAILURE);}
+  printf("Solved!\n");
   printf("\033[?25h");
 }
