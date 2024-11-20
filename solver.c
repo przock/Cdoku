@@ -6,71 +6,57 @@
 #include <unistd.h>
 
 bool solve_board(board *b, bool** hint) {
+  int i = 0;
+  while (i < 81) {
+    int x = i % 9; // column
+    int y = i / 9; // row
+    
   int min_guess = 1;
   bool backtrack = false;
-  for (int j = 0; j < 9; j++) { // rows
-    for (int i = 0; i < 9; i++) { // columns
-      /* printf("hint (%d, %d): %s\n", i, j, hint[i][j] ? "true" : "false"); */
-      /* printf("j == %d\n", j); */
+  int current = get_cell_value(b, x, y);
+  printf("(%d, %d): %d\n", x, y, current);
 
-      if (j < 0)
-	j = 0;
-      if (hint[j][i] == true) {
-        if (backtrack) {
-          if (i == 0) {
-	    j--;
-	    j--;
-	    i = 7;
-	    print_board_subgrid(b);
-	    continue;
-          } else if (i == 0 && j == 0) {
-           continue; 
-          } else {
-	    i--;
-	    i--;
-	    print_board_subgrid(b);
-	    continue;
-	  }
-	}          
-	  
-	print_board_subgrid(b);
-	continue;
-      }        
-        
-      usleep(1000);
-      if (backtrack) {
-	min_guess = get_cell_value(b, i, j) + 1;
-	set_cell_value(b, i, j, 0);
-      }
-      if (!backtrack)
+  if (hint[x][y] == true) {
+    if (backtrack) {
+      i--;
+      i--;
+      print_board_subgrid(b);
+      continue;
+    }
+  }
+  
+  usleep(500000);
+  if (backtrack) {
+    min_guess = get_cell_value(b, x, y) + 1;
+    set_cell_value(b, x, y, 0);
+  }
+  if (!backtrack)
 	min_guess = 1;
-
-      int guess = check_cell(b, i, j, min_guess);
-      backtrack = false;
-      /* printf("guess for (%d, %d): %d\n", i, j, guess); */
+  
+  int guess = check_cell(b, i, j, min_guess);
+  backtrack = false;
+  /* printf("guess for (%d, %d): %d\n", i, j, guess); */
       /* printf("min: %d\n", min_guess); */
-
-      if (guess != 10) {
-	if (guess != 11) {
-
-	  set_cell_value(b, i, j, guess);
-	  /* printf("set (%d, %d) to %d\n", i, j , guess); */
-          print_board_subgrid(b);
-	  /* printf("\033[13A"); */
-        } else if (guess == 11) {
-          if (i == 0) {
-	    j--;
-	    j--;
-	    i = 7;
-	    /* min_guess++; */
-	    backtrack = true;
-          } else {
-	    i--;
-	    i--;
-	    /* min_guess++; */
-	    backtrack = true;
-	  }
-	}
+  
+  if (guess != 10) {
+    if (guess != 11) {
+      
+      set_cell_value(b, i, j, guess);
+      /* printf("set (%d, %d) to %d\n", i, j , guess); */
+      print_board_subgrid(b);
+      /* printf("\033[13A"); */
+    } else if (guess == 11) {
+      if (i == 0) {
+	j--;
+	j--;
+	i = 7;
+	/* min_guess++; */
+	backtrack = true;
+      } else {
+	i--;
+	i--;
+	/* min_guess++; */
+	backtrack = true;
       }
     }
   }

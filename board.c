@@ -101,7 +101,7 @@ bool** get_hint_grid(board *b) { // get a 2d array of the pre-filled squares so 
     // iterate though the entire board and build a bool[][] of whether or not cells are filled
     for (int i = 0; i < 9; i++) { // rows
       for (int j = 0; j < 9; j++) { // columns
-	arr[j][i] = get_cell_value_filled(b, i, j);
+	arr[i][j] = get_cell_value_filled(b, i, j);
       }
     }
 
