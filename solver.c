@@ -5,11 +5,38 @@
 #include <stdio.h>
 #include <unistd.h>
 
-bool solve_board(board *b) {
+bool solve_board(board *b, bool** hint) {
   int min_guess = 1;
   bool backtrack = false;
   for (int j = 0; j < 9; j++) { // rows
     for (int i = 0; i < 9; i++) { // columns
+      /* printf("hint (%d, %d): %s\n", i, j, hint[i][j] ? "true" : "false"); */
+      /* printf("j == %d\n", j); */
+
+      if (j < 0)
+	j = 0;
+      if (hint[j][i] == true) {
+        if (backtrack) {
+          if (i == 0) {
+	    j--;
+	    j--;
+	    i = 7;
+	    print_board_subgrid(b);
+	    continue;
+          } else if (i == 0 && j == 0) {
+           continue; 
+          } else {
+	    i--;
+	    i--;
+	    print_board_subgrid(b);
+	    continue;
+	  }
+	}          
+	  
+	print_board_subgrid(b);
+	continue;
+      }        
+        
       usleep(1000);
       if (backtrack) {
 	min_guess = get_cell_value(b, i, j) + 1;
@@ -29,7 +56,7 @@ bool solve_board(board *b) {
 	  set_cell_value(b, i, j, guess);
 	  /* printf("set (%d, %d) to %d\n", i, j , guess); */
           print_board_subgrid(b);
-	  printf("\033[13A");
+	  /* printf("\033[13A"); */
         } else if (guess == 11) {
           if (i == 0) {
 	    j--;
@@ -47,8 +74,8 @@ bool solve_board(board *b) {
       }
     }
   }
-  printf("\033[14A");
-  print_board_subgrid(b);
+  /* printf("\033[14A"); */
+  /* print_board_subgrid(b); */
   return true;
 }
 
@@ -75,7 +102,6 @@ int solve_cell(board *b, int x, int y, int min_guess) {
 	continue;
       }
 
-
       printf("i: %d\n", i);
       printf("lat: cell at: (%d, %d): %d\n", x, i, get_cell_value(b, x, i));
       printf("lat: cell at: (%d, %d): %d\n", i, y, get_cell_value(b, i, y));
@@ -87,11 +113,6 @@ int solve_cell(board *b, int x, int y, int min_guess) {
       }
 
       if (get_cell_value(b, x, i) == guess || get_cell_value(b, i, y) == guess) {
-
-	/* if ((i == x && get_cell_value(b, x, y) == guess) || (i == y && get_cell_value(b, x, y) == guess)) { // problematic */
-	/*   printf("failsafe\n"); */
-	/*   continue; */
-	/* } */
 
 	printf("discrepancy found; discarding.\n");
 	conflict = true;

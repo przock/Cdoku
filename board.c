@@ -41,6 +41,10 @@ int get_cell_value(board *b, int y, int x) {
   return (*b)[x][y];
 }
 
+bool get_cell_value_filled(board *b, int y, int x) {
+  return (*b)[x][y] ? true : false;
+}
+
 PairList get_cell_grid(int y, int x) {
   Pair start;
   Pair end;
@@ -85,13 +89,21 @@ int* get_grid_values(board *b, int x, int y) {
 
 bool** get_hint_grid(board *b) { // get a 2d array of the pre-filled squares so we know which ones to skip when backtracking
     bool** arr = (bool**)malloc(9 * sizeof(int*));
+    if (!arr) {
+      printf("Memory error from get_hint_grid!");
+      exit(1);
+    }      
 
     for (int i = 0; i < 9; i++) {
         arr[i] = (bool*)malloc(9 * sizeof(int));
     }
 
-    if(!ret)
-        return NULL;
+    // iterate though the entire board and build a bool[][] of whether or not cells are filled
+    for (int i = 0; i < 9; i++) { // rows
+      for (int j = 0; j < 9; j++) { // columns
+	arr[j][i] = get_cell_value_filled(b, i, j);
+      }
+    }
 
-    return ret;
+    return arr;
 }
