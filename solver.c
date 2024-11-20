@@ -51,7 +51,6 @@ bool solve_board(board *b, int **hint) {
       i--;
     }
 
-
     print_board_subgrid(b);
     printf("\033[13A");
     /* printf("(%d, %d): %d\n", x, y, current); */
