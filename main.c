@@ -37,7 +37,7 @@ int main() {
   printf("Starting puzzle...\n\033[?25l");
   print_board_subgrid(g);
   printf("\n");  
-  solved = solve_board(g, hint_board, 15000);
+  solved = solve_board(g, hint_board, 200);
   /* solved = solve_board_quick(g, hint_board); */
   /* print_board_subgrid(g); */
   if (!solved) {printf("No solution!\n"); exit(EXIT_FAILURE);}

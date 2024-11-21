@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
 
 bool solve_board(board *b, int **hint, int delay) {
   int i = 0;
