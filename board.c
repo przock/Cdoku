@@ -156,3 +156,32 @@ int** get_hint_board(board *b) { // get a 2d array of the pre-filled squares so 
     
     return arr;
 }
+
+int** board_from_json_cartesian(cJSON* json) {
+  int** arr = (int**)malloc(9 * sizeof(int*));
+  if (!arr) {
+    printf("Memory error from set_board_from_json_cartesian!");
+    exit(1);
+  }      
+  
+  for (int i = 0; i < 9; i++) {
+    arr[i] = (int*)malloc(9 * sizeof(int));
+  }
+  
+  int i = 0;
+  while (i < 81) {
+    int x = i % 9; // column
+    int y = i / 9; // row
+    
+    // obtain the value from the json table and push it to the board
+    char coords[20];
+    sprintf(coords, "%d,%d", x+1, y+1);
+    cJSON *value = cJSON_GetObjectItem(json, coords);
+    if (cJSON_IsNumber(value)) {
+      arr[x][y] = value->valueint;
+    }
+    i++;
+  }
+  
+  return arr;
+}

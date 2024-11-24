@@ -8,8 +8,10 @@
 #define FLAG_HELP 'h'
 #define FLAG_VERBOSE 'v'
 #define FLAG_QUICK 'q'
+#define FLAG_CLEAN 'c'
 
-#define OPTION_STRING "j:J:d:hvq"
+ 
+#define OPTION_STRING "j:J:d:hvqc"
 #define HELP_STRING \
 "Usage: Cdoku [options]\n" \
 "Options:\n" \
@@ -18,6 +20,7 @@
 "  -d <arg>     Specify the delay between write operations to the board, ignored if Quick Mode is enabled\n" \
 "  -v           Enable Verbose Mode\n" \
 "  -q           Enable Quick Mode, this disables board printing until the puzzle is solved\n" \
+"  -c           Clean the terminal (Use if your cursor turns invisible)\n" \
 "  -h           Print this help message\n" \
 "\n" \
 "Description:\n" \
